@@ -7,5 +7,12 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 
+# Allure (gerado pelo reporter e pela CLI no CI)
+/allure-results/
+/allure-report/
+
 # Config local de ferramentas
 /.claude/
+
+# Variáveis de ambiente (use o .env.example como modelo)
+.env

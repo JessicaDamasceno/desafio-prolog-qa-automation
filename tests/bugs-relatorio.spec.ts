@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { VeiculoData } from '../pages/FormPage';
+import { diasAPartirDeHoje } from '../utils/dates';
 
 /**
  * Cenários do "Relatório de Bugs — Gestão de Frota" (Bugs 4, 5 e 11).
@@ -115,8 +116,8 @@ test.describe('Relatório de Bugs — Gestão de Frota', () => {
       status: 'Ativo',
       kmAtual: 100,
       motorista: 'Jéssica QA',
-      ultima: '2026-06-17',  // Última Manutenção
-      proxima: '2026-06-09', // Próxima ANTERIOR à Última -> inválido
+      ultima: diasAPartirDeHoje(-10),   // Última Manutenção (10 dias atrás)
+      proxima: diasAPartirDeHoje(-18),  // Próxima ANTERIOR à Última -> inválido
     };
 
     await listPage.goto();

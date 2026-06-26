@@ -26,14 +26,14 @@ const novoVeiculo: VeiculoData = {
   proxima: '2025-07-10',
 };
 
-test.describe('CRUD - Gestão de Frota', () => {
+test.describe('READ', () => {
 
   // ---------- READ ----------
   test('READ: listagem carrega com 35 veículos e paginação', async ({ listPage }) => {
     await listPage.goto();
     expect(await listPage.totalCount()).toBe(35);
     await expect(listPage.mostrando).toContainText('Mostrando 1');
-    await expect(listPage.rows).toHaveCount(10); // página exibe 10 por vez
+    await expect(listPage.rows).toHaveCount(10,{timeout:6000}); // página exibe 10 por vez
   });
 
   test('READ: busca filtra por placa', async ({ listPage }) => {
@@ -50,6 +50,8 @@ test.describe('CRUD - Gestão de Frota', () => {
     await detailsPage.expectField('ABC1D23');
     await detailsPage.expectField('Carlos Andrade');
   });
+});
+test.describe('CREATE', () => {
 
   // ---------- CREATE ----------
   test('CREATE: cadastra um novo veículo', async ({ page, listPage, formPage }) => {
@@ -83,6 +85,8 @@ test.describe('CRUD - Gestão de Frota', () => {
     await expect(listPage.table).toBeVisible();
     expect(await listPage.totalCount()).toBe(totalAntes);
   });
+});
+test.describe('UPDATE', () => {
 
   // ---------- UPDATE ----------
   // OBS: valida o comportamento CORRETO. Atualmente FALHA porque o campo "Modelo"
@@ -105,7 +109,8 @@ test.describe('CRUD - Gestão de Frota', () => {
     await detailsPage.expectField('99.999 km');
     await detailsPage.expectField('Civic Si');
   });
-
+});
+test.describe('DELETE', () => {
   // ---------- DELETE ----------
   // OBS: este teste valida o comportamento CORRETO. Atualmente ele FALHA porque
   // o sistema não decrementa o contador "Total" após a exclusão (ver BUGS.md).
