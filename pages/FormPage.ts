@@ -55,7 +55,8 @@ export class FormPage {
   /** Aguarda a hidratação do React antes de preencher (senão os primeiros fills se perdem). */
   private async waitReady() {
     await expect(this.tipo).toBeVisible();
-    await this.page.waitForTimeout(500);
+    // Garante que os inputs já estão interativos (hidratados) antes de preencher.
+    await expect(this.placa).toBeEditable();
   }
 
   async gotoNovo() {

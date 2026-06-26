@@ -48,8 +48,8 @@ export class HomePage {
     await this.page.goto('/');
     await expect(this.table).toBeVisible();
     await expect(this.rows.first()).toBeVisible();
-    // App Vite/React: aguarda a hidratação para os handlers (deletar, etc.) anexarem.
-    await this.page.waitForTimeout(500);
+    // Ele só é renderizado depois que os dados carregam e a listagem fica interativa.
+    await expect(this.total).toBeVisible();
   }
 
   /** Linha (tr) que contém a placa informada. */
