@@ -2,11 +2,14 @@ name: Playwright Tests
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # Necessário para a action publicar o relatório na branch gh-pages.
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -14,10 +17,48 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm ci
+    # Allure CLI (allure generate) roda em Java; o runner precisa de uma JRE.
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
+      env:
+        BASE_URL: ${{ secrets.BASE_URL }}
+    # Recupera o histórico do relatório anterior (já publicado em gh-pages)
+    # para alimentar o gráfico de tendência. Na 1ª execução a branch ainda
+    # não existe, então o passo pode falhar sem quebrar o build.
+    - name: Recupera histórico do Allure
+      if: ${{ !cancelled() }}
+      continue-on-error: true
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: gh-pages
+    # Monta o HTML navegável a partir de allure-results/. Roda mesmo se os
+    # testes falharem, para sempre publicar o relatório. Copia o histórico
+    # anterior para dentro dos resultados antes de gerar, mantendo a tendência.
+    - name: Generate Allure report
+      if: ${{ !cancelled() }}
+      run: |
+        if [ -d gh-pages/history ]; then cp -r gh-pages/history allure-results/history; fi
+        npx allure generate allure-results --clean -o allure-report
+    # Publica o relatório na branch gh-pages -> vira o site do GitHub Pages.
+    - name: Publica no GitHub Pages
+      if: ${{ !cancelled() }}
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: allure-report
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: allure-report
+        path: allure-report/
+        retention-days: 30
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

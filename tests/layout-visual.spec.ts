@@ -23,7 +23,7 @@ test.describe('Layout (visual) — Campo de data', () => {
 
   for (const field of ['ultima', 'proxima'] as const) {
     // fixme: a baseline atual contém o Bug 8 (ícone no meio). Mantido pulado
-    test.fixme(`Bug 8 (guard visual): aparência do campo "${field}"`, async ({ formPage, page }, testInfo) => {
+    test(`Bug 8 (guard visual): aparência do campo "${field}"`, async ({ formPage, page }, testInfo) => {
       test.skip(
         testInfo.project.name !== 'chromium',
         'Baseline visual fixada no Chromium para evitar flaky entre engines',
